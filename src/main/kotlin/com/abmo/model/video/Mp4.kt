@@ -14,15 +14,17 @@ data class Mp4(
 
 
 fun Mp4.toSimpleVideo(resolution: String): SimpleVideo {
-    val source = sources?.find { it?.label == resolution }
+    val source = requireNotNull(sources?.find {
+        it?.label == resolution && !it.sub.isNullOrBlank()
+    }) { "No source with a server is available for resolution $resolution" }
     return SimpleVideo(
         slug = slug,
         md5_id = md5_id,
-        label = source?.label,
-        size = source?.size,
-        url = buildSegmentUrl(domains?.firstOrNull(), source?.sub),
-        path = source?.path,
-        resId = source?.res_id
+        label = source.label,
+        size = source.size,
+        url = buildSegmentUrl(domains?.firstOrNull(), source.sub),
+        path = source.path,
+        resId = source.res_id
     )
 }
 
